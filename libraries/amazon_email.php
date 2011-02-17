@@ -17,11 +17,16 @@ class Amazon_Email
 		$this->_ci = &get_instance();
 		$this->_ci->load->helper("email_helper");
 
-		$this->_config = $conf;
-
-		$this->_ses = new AmazonSES($this->_config['aws_access_key'], $this->_config['aws_secret_key']);
-
+		$this->initialize($conf);
 		$this->clear();
+	}
+
+	function initialize($conf)
+	{
+		$this->_config = $conf;
+		if (isset($this->_config['aws_access_key'])){
+			$this->_ses = new AmazonSES($this->_config['aws_access_key'], $this->_config['aws_secret_key']);
+		}
 	}
 
 	function to($recipients)
@@ -155,12 +160,12 @@ class Amazon_Email
 		);
 
 		// Success?
-		$resp = array(
+		$resp = (object) array(
 			"success" => $response->isOk(),
 			"http_code" => $response->status
 		);
 
-		return (object) $resp;		
+		return $resp->success;		
 	}
 
 	function attach()
@@ -172,6 +177,21 @@ class Amazon_Email
 	{
 		
 	}
+
+	// CI Compat
+	function set_newline($newline = "\n")
+	{
+		if ($newline != "\n" AND $newline != "\r\n" AND $newline != "\r")
+		{
+			$this->newline	= "\n";
+			return;
+		}
+
+		$this->newline	= $newline;
+	}
+
+
+	// Private
 
 	function _add_recipient($type, $recipients)
 	{
