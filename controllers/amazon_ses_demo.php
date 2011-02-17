@@ -1,5 +1,17 @@
 <?php
 
+/**
+* Amazon Simple Email Service Library for Codeigniter
+*
+*
+* @package Amazon SES
+* @version 1.0
+* @author Michael Heap
+* @license MIT License
+* @copyright 2011 Prime Accounts
+* @link http://www.primeaccounts.com
+*/
+
 class Amazon_SES_Demo extends Controller
 {
 
@@ -21,5 +33,4 @@ class Amazon_SES_Demo extends Controller
 
 		var_dump($r);
 	}
-
 }

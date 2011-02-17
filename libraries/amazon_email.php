@@ -1,5 +1,16 @@
 <?php
 
+/**
+* Amazon Simple Email Service Library for Codeigniter
+*
+*
+* @package Amazon SES
+* @version 1.0
+* @author Michael Heap
+* @license MIT License
+* @copyright 2011 Prime Accounts
+* @link http://www.primeaccounts.com
+*/
 class Amazon_Email
 {
 
@@ -9,7 +20,7 @@ class Amazon_Email
 	function __construct($conf = array())
 	{
 
-		if ( !class_exists("Amazon_SES") )
+		if ( ! class_exists("Amazon_SES"))
 		{
 			require_once("AWSSDKforPHP/sdk.class.php");
 		}
@@ -24,7 +35,8 @@ class Amazon_Email
 	function initialize($conf)
 	{
 		$this->_config = $conf;
-		if (isset($this->_config['aws_access_key'])){
+		if (isset($this->_config['aws_access_key']))
+        {
 			$this->_ses = new AmazonSES($this->_config['aws_access_key'], $this->_config['aws_secret_key']);
 		}
 	}
@@ -46,7 +58,7 @@ class Amazon_Email
 
 	function from($email, $name = null)
 	{
-		if ( is_null($name) )
+		if (is_null($name))
 		{
 			$name = $email;
 		}
@@ -54,36 +66,36 @@ class Amazon_Email
 		$this->_from = array( "name" => $name, "email" => $email);
 	}
 
-	function reply_to($email, $name=null)
+	function reply_to($email, $name = null)
 	{
-		if ( empty($email) )
+		if (empty($email))
 		{
 			show_error("Amazon SES: No Reply To Address Provided");
 		}
 
-		if ( is_null($name) )
+		if (is_null($name))
 		{
 			$name = $email;
 		}
 
-		if ( is_array($email) )
+		if (is_array($email))
 		{
 			foreach ($email as $name => $e)
 			{
-				if (! valid_email($e) )
+				if ( ! valid_email($e))
 				{
 					show_error("Amazon SES: Invalid Email");
 				}
-				$this->_reply_to[] = $name . ' <'.$e.'>';
+				$this->_reply_to[] = $name.' <'.$e.'>';
 			}
 			return;
 		}
 
-		if (! valid_email($email) )
+		if ( ! valid_email($email))
 		{
 			show_error("Amazon SES: Invalid Email");
 		}
-		$this->_reply_to[] = $name . ' <'.$email.'>';
+		$this->_reply_to[] = $name.' <'.$email.'>';
 	}
 
 	function subject($sub)
@@ -103,14 +115,14 @@ class Amazon_Email
 
 	function clear()
 	{
-		$this->_recipients = array( "to" => array(), "cc" => array(), "bcc" => array() );
+		$this->_recipients = array("to" => array(), "cc" => array(), "bcc" => array());
 		$this->_message = array( "subject" => "", "body_html" => "", "body_text" => "");
 	}
 
 	function send()
 	{
 
-		if ( $this->_message['subject'] == "")
+		if ($this->_message['subject'] == "")
 		{
 			show_error("Amazon SES: Missing Subject");
 		}
@@ -118,23 +130,23 @@ class Amazon_Email
 		// Fix the data so it's actually fine
 
 		// Message
-		if ( $this->_message['body_text'] == "")
+		if ($this->_message['body_text'] == "")
 		{
 			$this->_message['body_text'] = strip_tags($this->_message['body_html']);
 		}
 
-		if ( $this->_message['body_html'] == "")
+		if ($this->_message['body_html'] == "")
 		{
 			$this->_message['body_html'] = $this->_message['body_text'];
 		}
 
-		if ( $this->_message['body_text'] == "")
+		if ($this->_message['body_text'] == "")
 		{
 			show_error("Amazon SES: Missing Body Content");
 		}
 
 		// Recipients
-		if ( empty($this->_recipients["to"]) )
+		if (empty($this->_recipients["to"]))
 		{
 			show_error("Amazon SES: No recipient specified in the To field");
 		}
@@ -143,14 +155,14 @@ class Amazon_Email
 		$opt = array();
 
 		// Reply to?
-		if ( !empty($this->_reply_to) )
+		if ( ! empty($this->_reply_to))
 		{
 			$opt['ReplyToAddresses'] = $this->_reply_to;
 		}
 
 		// Actually send via SES
 		$response = $this->_ses->send_email(
-			$this->_from['name'] . ' <'. $this->_from['email'] .'>',
+			$this->_from['name'].' <'.$this->_from['email'].'>',
 			array('ToAddresses' => $this->_recipients["to"], 'CcAddresses' => $this->_recipients["cc"], 'BccAddresses' => $this->_recipients["bcc"]),
 			array(
 				'Subject.Data' => $this->_message['subject'],
@@ -195,16 +207,16 @@ class Amazon_Email
 
 	function _add_recipient($type, $recipients)
 	{
-		if ( empty($recipients) )
+		if (empty($recipients))
 		{
 			show_error("Amazon SES: No Recipients Provided");
 		}
 
-		if ( is_array($recipients) )
+		if (is_array($recipients))
 		{
-			foreach ($recipients as $recip)
+			foreach($recipients as $recip)
 			{
-				if (! valid_email($recip) )
+				if ( ! valid_email($recip))
 				{
 					show_error("Amazon SES: Invalid Email");
 				}
@@ -213,7 +225,7 @@ class Amazon_Email
 			return;
 		}
 
-		if (! valid_email($recipients) )
+		if ( ! valid_email($recipients))
 		{
 			show_error("Amazon SES: Invalid Email");
 		}
