@@ -17,7 +17,9 @@ class Amazon_SES_Demo extends Controller
 		$this->email->from("person@company.com", "Company Support");
 
 		$this->email->reply_to(array("Name" => "name@example.com"));
-		$this->email->send();
+		$r = $this->email->send();
+
+		var_dump($r);
 	}
 
 }
